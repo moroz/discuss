@@ -16,7 +16,7 @@ defmodule Discuss.TopicController do
     changeset = Topic.changeset(%Topic{}, topic_params)
 
     case Repo.insert(changeset) do
-      {:ok, topic} ->
+      {:ok, _topic} ->
         conn
         |> put_flash(:info, "Topic created.")
         |> redirect(to: topic_path(conn, :index))
@@ -50,5 +50,13 @@ defmodule Discuss.TopicController do
         |> put_flash(:error, "Topic could not be saved.")
         |> render("edit.html", changeset: changeset, topic: topic)
     end
+  end
+
+  def delete(conn, %{"id" => topic_id}) do
+    Repo.get!(Topic, topic_id) |> Repo.delete!()
+
+    conn
+    |> put_flash(:info, "Topic deleted.")
+    |> redirect(to: topic_path(conn, :index))
   end
 end

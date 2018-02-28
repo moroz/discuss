@@ -55,4 +55,4 @@ config :discuss, Discuss.Repo,
   hostname: "localhost",
   pool_size: 10
 
-import_config "prod.secret.exs"
+import_config "dev.secret.exs"

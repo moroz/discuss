@@ -13,7 +13,7 @@ defmodule Discuss.User do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(@required_params)
+    |> cast(params, @required_params)
     |> validate_required(@required_params)
   end
 end

@@ -49,7 +49,7 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :discuss, Discuss.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "debian",
+  username: "arch",
   password: "7R2h2djZ",
   database: "discuss_dev",
   hostname: "localhost",

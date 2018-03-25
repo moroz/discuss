@@ -2,6 +2,9 @@ defmodule Discuss.TopicController do
   use Discuss.Web, :controller
   alias Discuss.Topic
 
+  plug(Discuss.Plugs.RequireAuth when action in ~w(new create edit update delete)a)
+  plug :check_topic_owner when action in ~w(update edit delete)a
+
   def index(conn, _params) do
     topics = Repo.all(Topic)
     render(conn, "index.html", topics: topics)
@@ -13,7 +16,9 @@ defmodule Discuss.TopicController do
   end
 
   def create(conn, %{"topic" => topic_params}) do
-    changeset = Topic.changeset(%Topic{}, topic_params)
+    changeset = conn.assigns.user
+                |> build_assoc(:topics)
+                |> Topic.changeset(topic_params)
 
     case Repo.insert(changeset) do
       {:ok, _topic} ->
@@ -58,5 +63,18 @@ defmodule Discuss.TopicController do
     conn
     |> put_flash(:info, "Topic deleted.")
     |> redirect(to: topic_path(conn, :index))
+  end
+
+  defp check_topic_owner(conn, _params) do
+    %{params: %{"id" => topic_id}} = conn
+
+    if Repo.get(Topic, topic_id).user_id == conn.assigns.user.id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You are not allowed to perform this action.")
+      |> redirect(to: topic_path(conn, :index))
+      |> halt()
+    end
   end
 end
